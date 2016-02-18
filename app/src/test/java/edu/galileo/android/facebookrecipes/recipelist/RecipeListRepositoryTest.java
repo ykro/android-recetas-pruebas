@@ -34,6 +34,7 @@ import static org.mockito.Mockito.verify;
 public class RecipeListRepositoryTest extends BaseRecipeListTest {
     @Mock
     private EventBus eventBus;
+
     private FacebookRecipesApp app;
     private RecipeListRepository repository;
     private ArgumentCaptor<RecipeListEvent> recipeListEventArgumentCaptor;
@@ -45,8 +46,9 @@ public class RecipeListRepositoryTest extends BaseRecipeListTest {
     public void setUp() throws Exception {
         super.setUp();
         repository = new RecipeListRepositoryImpl(eventBus);
-        recipeListEventArgumentCaptor = ArgumentCaptor.forClass(RecipeListEvent.class);
         app = (FacebookRecipesApp) RuntimeEnvironment.application;
+        recipeListEventArgumentCaptor = ArgumentCaptor.forClass(RecipeListEvent.class);
+
         app.onCreate();
     }
 
@@ -57,7 +59,7 @@ public class RecipeListRepositoryTest extends BaseRecipeListTest {
 
     @Test
     public void getSavedRecipesCalled_eventPosted() {
-        //setup
+        //given
         int recipesToStore = 5;
         Recipe currentRecipe;
         List<Recipe> testRecipeList = new ArrayList<>();
@@ -71,8 +73,10 @@ public class RecipeListRepositoryTest extends BaseRecipeListTest {
                                         .from(Recipe.class)
                                         .queryList();
 
-        //test
+        //when
         repository.getSavedRecipes();
+
+        //then
         verify(eventBus).post(recipeListEventArgumentCaptor.capture());
 
         RecipeListEvent event = recipeListEventArgumentCaptor.getValue();
@@ -119,7 +123,6 @@ public class RecipeListRepositoryTest extends BaseRecipeListTest {
         recipe.setRecipeId(newRecipeId);
         recipe.save();
 
-        assertTrue(recipe.exists());
         repository.removeRecipe(recipe);
         verify(eventBus).post(recipeListEventArgumentCaptor.capture());
         assertFalse(recipe.exists());

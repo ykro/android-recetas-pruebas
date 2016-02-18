@@ -45,7 +45,6 @@ public class RecipeListPresenterTest extends BaseRecipeListTest {
 
     @Test
     public void onDestroy_UnsubscribedToEventBusAndViewDestroyed() throws NoSuchFieldException {
-
         presenter.onDestroy();
 
         assertNull(presenter.getView());

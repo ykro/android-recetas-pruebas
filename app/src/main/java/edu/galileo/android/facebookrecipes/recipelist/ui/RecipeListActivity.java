@@ -22,6 +22,7 @@ import edu.galileo.android.facebookrecipes.R;
 import edu.galileo.android.facebookrecipes.entities.Recipe;
 import edu.galileo.android.facebookrecipes.login.ui.LoginActivity;
 import edu.galileo.android.facebookrecipes.recipelist.RecipeListPresenter;
+import edu.galileo.android.facebookrecipes.recipelist.di.RecipeListComponent;
 import edu.galileo.android.facebookrecipes.recipelist.ui.adapters.OnItemClickListener;
 import edu.galileo.android.facebookrecipes.recipelist.ui.adapters.RecipesAdapter;
 import edu.galileo.android.facebookrecipes.recipemain.ui.RecipeMainActivity;
@@ -36,6 +37,8 @@ public class RecipeListActivity extends AppCompatActivity implements RecipeListV
     @Inject
     RecipeListPresenter presenter;
 
+    private RecipeListComponent component;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +46,7 @@ public class RecipeListActivity extends AppCompatActivity implements RecipeListV
         ButterKnife.bind(this);
         setupInjection();
         setupRecyclerView();
+
         presenter.onCreate();
         presenter.getRecipes();
     }
@@ -89,12 +93,32 @@ public class RecipeListActivity extends AppCompatActivity implements RecipeListV
 
     private void setupInjection() {
         FacebookRecipesApp app = (FacebookRecipesApp)getApplication();
-        app.getRecipeListComponent(this, this, this).inject(this);
+        component = app.getRecipeListComponent(this, this, this);
+        //app.getRecipeListComponent(this, this, this).inject(this);
+        adapter = getAdapter();
+        presenter = getPresenter();
+    }
+
+    public RecipesAdapter getAdapter() {
+        return component.getAdapter();
+    }
+
+    public RecipeListPresenter getPresenter() {
+        return component.getPresenter();
     }
 
     private void setupRecyclerView() {
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         recyclerView.setAdapter(adapter);
+    }
+
+    public void setAdapter(RecipesAdapter adapter) {
+        this.adapter = adapter;
+    }
+
+    public void setPresenter(RecipeListPresenter presenter) {
+        this.presenter = presenter;
+        System.out.println(presenter.hashCode() + " <-2");
     }
 
     @Override
