@@ -3,12 +3,10 @@ package edu.galileo.android.facebookrecipes.recipelist;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
@@ -33,7 +31,7 @@ import static org.mockito.Mockito.verify;
  */
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
-public class RepositoryTest {
+public class RecipeListRepositoryTest extends BaseRecipeListTest {
     @Mock
     private EventBus eventBus;
     private FacebookRecipesApp app;
@@ -42,9 +40,10 @@ public class RepositoryTest {
 
     private final static int RECIPES_IN_DELETE_EVENT = 1;
 
-    @Before
-    public void setupRepository() {
-        MockitoAnnotations.initMocks(this);
+
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
         repository = new RecipeListRepositoryImpl(eventBus);
         recipeListEventArgumentCaptor = ArgumentCaptor.forClass(RecipeListEvent.class);
         app = (FacebookRecipesApp) RuntimeEnvironment.application;

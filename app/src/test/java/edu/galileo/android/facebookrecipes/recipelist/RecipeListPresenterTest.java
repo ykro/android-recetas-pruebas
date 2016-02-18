@@ -1,10 +1,8 @@
 package edu.galileo.android.facebookrecipes.recipelist;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
 import java.util.List;
@@ -15,14 +13,14 @@ import edu.galileo.android.facebookrecipes.recipelist.events.RecipeListEvent;
 import edu.galileo.android.facebookrecipes.recipelist.ui.RecipeListView;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 /**
  * Created by ykro.
  */
-public class PresenterTest {
+public class RecipeListPresenterTest extends BaseRecipeListTest {
     @Mock
     private EventBus eventBus;
     @Mock
@@ -32,14 +30,11 @@ public class PresenterTest {
     @Mock
     private StoredRecipesInteractor storedInteractor;
 
-    private Recipe RECIPE = new Recipe();
-    private RecipeListEvent EVENT = new RecipeListEvent();
-
     private RecipeListPresenter presenter;
 
-    @Before
-    public void setupPresenter() {
-        MockitoAnnotations.initMocks(this);
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
         presenter = new RecipeListPresenterImpl(eventBus, view, listInteractor, storedInteractor);
     }
 
@@ -51,10 +46,12 @@ public class PresenterTest {
 
     @Test
     public void onDestroy_UnsubscribedToEventBusAndViewDestroyed() throws NoSuchFieldException {
-        assertNotNull(presenter.getView());
+        given(presenter.getView()).willReturn(view);
+
         presenter.onDestroy();
-        verify(eventBus).unregister(presenter);
+
         assertNull(presenter.getView());
+        verify(eventBus).unregister(presenter);
     }
 
     @Test
@@ -64,19 +61,23 @@ public class PresenterTest {
     }
 
     @Test
-    public void clickOnFavorite_UpdateRecipe() {
-        RECIPE.setFavorite(true);
-        updateRecipe(RECIPE);
+    public void toggleFavorite_true() {
+        Recipe recipe = new Recipe();
+        boolean favorite = true;
+        recipe.setFavorite(favorite);
+
+        ArgumentCaptor<Recipe> recipeArgumentCaptor = ArgumentCaptor.forClass(Recipe.class);
+        presenter.toggleFavorite(recipe);
+        verify(storedInteractor).executeUpdate(recipeArgumentCaptor.capture());
+        assertEquals(!favorite, recipeArgumentCaptor.getValue().getFavorite());
     }
 
     @Test
-    public void clickNoNOnFavorite_UpdateRecipe() {
-        RECIPE.setFavorite(false);
-        updateRecipe(RECIPE);
-    }
+    public void toggleFavorite_false() {
+        Recipe recipe = new Recipe();
+        boolean favorite = false;
+        recipe.setFavorite(favorite);
 
-    private void updateRecipe(Recipe recipe) {
-        boolean favorite = recipe.getFavorite();
         ArgumentCaptor<Recipe> recipeArgumentCaptor = ArgumentCaptor.forClass(Recipe.class);
         presenter.toggleFavorite(recipe);
         verify(storedInteractor).executeUpdate(recipeArgumentCaptor.capture());
@@ -85,8 +86,9 @@ public class PresenterTest {
 
     @Test
     public void removeRecipe() {
-        presenter.removeRecipe(RECIPE);
-        verify(storedInteractor).executeDelete(RECIPE);
+        Recipe recipe = new Recipe();
+        presenter.removeRecipe(recipe);
+        verify(storedInteractor).executeDelete(recipe);
     }
 
     @Test
@@ -96,27 +98,31 @@ public class PresenterTest {
                 new Recipe(),
                 new Recipe()});
 
-        EVENT.setType(RecipeListEvent.READ_EVENT);
-        EVENT.setRecipes(recipeList);
+        RecipeListEvent listEvent = new RecipeListEvent();
+        listEvent.setType(RecipeListEvent.READ_EVENT);
+        listEvent.setRecipes(recipeList);
 
-        presenter.onEventMainThread(EVENT);
+        presenter.onEventMainThread(listEvent);
         verify(view).setRecipes(recipeList);
     }
 
     @Test
     public void onUpdateEvent() {
-        EVENT.setType(RecipeListEvent.UPDATE_EVENT);
+        RecipeListEvent listEvent = new RecipeListEvent();
+        listEvent.setType(RecipeListEvent.UPDATE_EVENT);
 
-        presenter.onEventMainThread(EVENT);
+        presenter.onEventMainThread(listEvent);
         verify(view).recipeUpdated();
     }
 
     @Test
     public void onDeleteEvent() {
-        EVENT.setType(RecipeListEvent.DELETE_EVENT);
-        EVENT.setRecipes(Arrays.asList(new Recipe[]{RECIPE}));
+        Recipe recipe = new Recipe();
+        RecipeListEvent listEvent = new RecipeListEvent();
+        listEvent.setType(RecipeListEvent.DELETE_EVENT);
+        listEvent.setRecipes(Arrays.asList(new Recipe[]{recipe}));
 
-        presenter.onEventMainThread(EVENT);
-        verify(view).recipeDeleted(RECIPE);
+        presenter.onEventMainThread(listEvent);
+        verify(view).recipeDeleted(recipe);
     }
 }
