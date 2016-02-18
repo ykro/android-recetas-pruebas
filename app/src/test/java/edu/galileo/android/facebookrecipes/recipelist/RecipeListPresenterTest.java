@@ -14,7 +14,6 @@ import edu.galileo.android.facebookrecipes.recipelist.ui.RecipeListView;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -46,7 +45,6 @@ public class RecipeListPresenterTest extends BaseRecipeListTest {
 
     @Test
     public void onDestroy_UnsubscribedToEventBusAndViewDestroyed() throws NoSuchFieldException {
-        given(presenter.getView()).willReturn(view);
 
         presenter.onDestroy();
 
