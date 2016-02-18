@@ -21,7 +21,8 @@ public class RecipeListRepositoryImpl implements RecipeListRepository {
 
     @Override
     public void getSavedRecipes() {
-        FlowCursorList<Recipe> storedRecipes = new FlowCursorList<Recipe>(true, Recipe.class);
+        int cacheSize = 50;
+        FlowCursorList<Recipe> storedRecipes = new FlowCursorList<Recipe>(cacheSize, Recipe.class);
         post(RecipeListEvent.READ_EVENT, storedRecipes.getAll());
     }
 

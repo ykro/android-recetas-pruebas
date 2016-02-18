@@ -28,10 +28,6 @@ public class Recipe extends BaseModel {
 
     public Recipe(){}
 
-    public Recipe(String recipeId) {
-        this.recipeId = recipeId;
-    }
-
     public String getRecipeId() {
         return recipeId;
     }
@@ -70,5 +66,17 @@ public class Recipe extends BaseModel {
 
     public void setFavorite(boolean favorite) {
         this.favorite = favorite;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        boolean equal = false;
+
+        if (obj instanceof Recipe){
+            Recipe recipe = (Recipe)obj;
+            equal = this.recipeId.equals(recipe.getRecipeId());
+        }
+
+        return equal;
     }
 }

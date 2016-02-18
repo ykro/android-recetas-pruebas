@@ -30,6 +30,16 @@ public class FacebookRecipesApp extends Application {
         initFacebook();
     }
 
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+        DBTearDown();
+    }
+
+    private void DBTearDown() {
+        FlowManager.destroy();
+    }
+
     private void initDB() {
         FlowManager.init(this);
     }
