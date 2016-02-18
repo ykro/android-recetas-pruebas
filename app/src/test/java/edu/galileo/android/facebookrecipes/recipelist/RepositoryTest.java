@@ -1,6 +1,5 @@
 package edu.galileo.android.facebookrecipes.recipelist;
 
-import com.raizlabs.android.dbflow.list.FlowCursorList;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
 import org.junit.After;
@@ -60,9 +59,6 @@ public class RepositoryTest {
     @Test
     public void getSavedRecipesCalled_eventPosted() {
         //setup
-        FlowCursorList<Recipe> storedRecipes = new FlowCursorList<>(false, Recipe.class);
-        int storedRecipesOriginalSize = storedRecipes.getCount();
-
         int recipesToStore = 5;
         Recipe currentRecipe;
         List<Recipe> testRecipeList = new ArrayList<>();
@@ -72,7 +68,9 @@ public class RepositoryTest {
             currentRecipe.save();
             testRecipeList.add(currentRecipe);
         }
-        storedRecipes.refresh();
+        List<Recipe> recipesFromDB = new Select()
+                                        .from(Recipe.class)
+                                        .queryList();
 
         //test
         repository.getSavedRecipes();
@@ -82,7 +80,6 @@ public class RepositoryTest {
         assertEquals(RecipeListEvent.READ_EVENT, event.getType());
 
         List<Recipe> recipesFromEvent = event.getRecipes();
-        List<Recipe> recipesFromDB = storedRecipes.getAll();
         assertEquals(recipesFromEvent.size(), recipesToStore);
         assertEquals(recipesFromEvent, recipesFromDB);
 
@@ -90,10 +87,6 @@ public class RepositoryTest {
         for (Recipe recipe : testRecipeList) {
             recipe.delete();
         }
-
-        storedRecipes.refresh();
-        //check that test's changes are removed
-        assertEquals(storedRecipesOriginalSize, storedRecipes.getCount());
     }
 
     @Test
