@@ -15,9 +15,8 @@ import edu.galileo.android.facebookrecipes.recipelist.events.RecipeListEvent;
 import edu.galileo.android.facebookrecipes.recipelist.ui.RecipeListView;
 
 import static junit.framework.Assert.assertEquals;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -51,10 +50,11 @@ public class PresenterTest {
     }
 
     @Test
-    public void onDestroy_UnsubscribedToEventBusAndViewDestroyed() {
+    public void onDestroy_UnsubscribedToEventBusAndViewDestroyed() throws NoSuchFieldException {
+        assertNotNull(presenter.getView());
         presenter.onDestroy();
         verify(eventBus).unregister(presenter);
-        assertThat(presenter.getView(), is(nullValue()));
+        assertNull(presenter.getView());
     }
 
     @Test
