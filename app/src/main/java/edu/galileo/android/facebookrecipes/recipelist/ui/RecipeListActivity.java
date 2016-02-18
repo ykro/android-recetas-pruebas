@@ -60,7 +60,7 @@ public class RecipeListActivity extends AppCompatActivity implements RecipeListV
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_recipes_list, menu);
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -110,15 +110,6 @@ public class RecipeListActivity extends AppCompatActivity implements RecipeListV
     private void setupRecyclerView() {
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         recyclerView.setAdapter(adapter);
-    }
-
-    public void setAdapter(RecipesAdapter adapter) {
-        this.adapter = adapter;
-    }
-
-    public void setPresenter(RecipeListPresenter presenter) {
-        this.presenter = presenter;
-        System.out.println(presenter.hashCode() + " <-2");
     }
 
     @Override

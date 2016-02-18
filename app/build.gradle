@@ -8,6 +8,8 @@ android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
 
+    useLibrary 'org.apache.http.legacy'
+
     defaultConfig {
         applicationId "edu.galileo.android.facebookrecipes"
         minSdkVersion rootProject.ext.minSdkVersion
@@ -55,6 +57,7 @@ dependencies {
     compile "com.github.Raizlabs.DBFlow:dbflow:$rootProject.dbflowVersion"
 
     testCompile "org.robolectric:robolectric:$rootProject.roboelectricVersion"
+    testCompile "org.assertj:assertj-core:$rootProject.assertjVersion"
 
     // Dependencies for local unit tests
     testCompile "junit:junit:$rootProject.ext.junitVersion"
