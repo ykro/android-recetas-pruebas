@@ -52,7 +52,7 @@ public class RecipeListPresenterTest extends BaseRecipeListTest {
     }
 
     @Test
-    public void getRecipes() {
+    public void getRecipes_executesInteractor() {
         presenter.getRecipes();
         verify(listInteractor).execute();
     }
@@ -82,14 +82,14 @@ public class RecipeListPresenterTest extends BaseRecipeListTest {
     }
 
     @Test
-    public void removeRecipe() {
+    public void removeRecipe_executesInteractor() {
         Recipe recipe = new Recipe();
         presenter.removeRecipe(recipe);
         verify(storedInteractor).executeDelete(recipe);
     }
 
     @Test
-    public void onReadEvent() {
+    public void onReadEvent_setRecipesOnView() {
         List<Recipe> recipeList = Arrays.asList(new Recipe[]{
                 new Recipe(),
                 new Recipe(),
@@ -104,7 +104,7 @@ public class RecipeListPresenterTest extends BaseRecipeListTest {
     }
 
     @Test
-    public void onUpdateEvent() {
+    public void onUpdateEvent_callUpdateMethodOnView() {
         RecipeListEvent listEvent = new RecipeListEvent();
         listEvent.setType(RecipeListEvent.UPDATE_EVENT);
 
@@ -113,7 +113,7 @@ public class RecipeListPresenterTest extends BaseRecipeListTest {
     }
 
     @Test
-    public void onDeleteEvent() {
+    public void onDeleteEvent_removesFromView() {
         Recipe recipe = new Recipe();
         RecipeListEvent listEvent = new RecipeListEvent();
         listEvent.setType(RecipeListEvent.DELETE_EVENT);

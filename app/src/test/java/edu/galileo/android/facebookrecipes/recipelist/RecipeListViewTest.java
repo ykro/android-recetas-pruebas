@@ -2,7 +2,6 @@ package edu.galileo.android.facebookrecipes.recipelist;
 
 import android.content.ComponentName;
 import android.content.Intent;
-import android.support.v7.widget.RecyclerView;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,7 +9,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.fakes.RoboMenuItem;
 import org.robolectric.shadows.ShadowActivity;
@@ -25,13 +23,13 @@ import edu.galileo.android.facebookrecipes.entities.Recipe;
 import edu.galileo.android.facebookrecipes.login.ui.LoginActivity;
 import edu.galileo.android.facebookrecipes.recipelist.ui.RecipeListActivity;
 import edu.galileo.android.facebookrecipes.recipelist.ui.RecipeListView;
-import edu.galileo.android.facebookrecipes.recipelist.ui.adapters.OnItemClickListener;
 import edu.galileo.android.facebookrecipes.recipelist.ui.adapters.RecipesAdapter;
 import edu.galileo.android.facebookrecipes.recipemain.ui.RecipeMainActivity;
 
 import static junit.framework.Assert.assertEquals;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
+import static org.robolectric.Shadows.shadowOf;
 
 /**
  * Created by ykro.
@@ -47,9 +45,7 @@ public class RecipeListViewTest extends BaseRecipeListTest {
 
     private RecipeListView view;
     private RecipeListActivity activity;
-    private OnItemClickListener onItemClickListener;
 
-    private RecyclerView recyclerView;
     private ShadowActivity shadowActivity;
     private ActivityController<RecipeListActivity> controller;
 
@@ -72,29 +68,24 @@ public class RecipeListViewTest extends BaseRecipeListTest {
         activity = controller.get();
 
         view = (RecipeListView)activity;
-        onItemClickListener = (OnItemClickListener)activity;
+        shadowActivity = shadowOf(activity);
 
-        shadowActivity = Shadows.shadowOf(activity);
-        recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerView);
-
-        recyclerView.measure(0, 0);
-        recyclerView.layout(0, 0, 100, 10000);
     }
 
     @Test
-    public void onActivityCreated() {
+    public void onActivityCreated_getsRecipesFromDataSource() {
         verify(presenter).onCreate();
         verify(presenter).getRecipes();
     }
 
     @Test
-    public void onActivityDestroyed() {
+    public void onActivityDestroyed_destroyPresenter() {
         controller.destroy();
         verify(presenter).onDestroy();
     }
 
     @Test
-    public void setRecipesFromPresenter() {
+    public void getRecipesFromPresenter_setInAdapter() {
         List<Recipe> recipeList = Arrays.asList(new Recipe[]{
                 new Recipe(),
                 new Recipe(),
@@ -107,13 +98,13 @@ public class RecipeListViewTest extends BaseRecipeListTest {
     }
 
     @Test
-    public void recipeUpdatedFromPresenter() {
+    public void recipeUpdatedFromPresenter_adapterUpdated() {
         view.recipeUpdated();
         verify(adapter).notifyDataSetChanged();
     }
 
     @Test
-    public void recipeDeletedFromPresenter() {
+    public void recipeDeletedFromPresenter_adapterUpdated() {
         Recipe recipe = new Recipe();
         view.recipeDeleted(recipe);
         verify(adapter).removeRecipe(recipe);
@@ -136,34 +127,4 @@ public class RecipeListViewTest extends BaseRecipeListTest {
         Intent intent = shadowActivity.peekNextStartedActivityForResult().intent;
         assertThat(intent.getComponent()).isEqualTo(new ComponentName(controller.get(), RecipeMainActivity.class));
     }
-
-    @Test
-    public void onItemClick() {
-        //ShadowListView shadowListView =
-
-
-//activity.onItemClick();
-    }
-
-
-    //onItemClick, onFavClick, onDeleteClick
-/*
-
-    @Override
-    public void onItemClick(Recipe recipe) {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(recipe.getSourceURL()));
-        startActivity(intent);
-    }
-
-    @Override
-    public void onFavClick(Recipe recipe) {
-        presenter.toggleFavorite(recipe);
-    }
-
-    @Override
-    public void onDeleteClick(Recipe recipe) {
-        presenter.removeRecipe(recipe);
-    }
- */
-
 }
