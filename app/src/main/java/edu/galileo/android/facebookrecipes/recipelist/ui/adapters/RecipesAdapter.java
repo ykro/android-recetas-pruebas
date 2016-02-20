@@ -48,7 +48,7 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.ViewHold
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.row_stored_recipes, parent, false);
+                    .inflate(R.layout.row_stored_recipes, parent, false);
         ViewHolder vh = new ViewHolder(v);
         return vh;
     }
@@ -59,6 +59,7 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.ViewHold
 
         imageLoader.load(holder.imgRecipe, currentRecipe.getImageURL());
         holder.txtRecipeName.setText(currentRecipe.getTitle());
+        holder.imgFav.setTag(currentRecipe.getFavorite());
         if (currentRecipe.getFavorite()) {
             holder.imgFav.setImageResource(android.R.drawable.btn_star_big_on);
         } else {
@@ -117,11 +118,13 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.ViewHold
                 }
             });
 
-            ShareLinkContent content = new ShareLinkContent.Builder()
-                    .setContentUrl(Uri.parse(recipe.getSourceURL()))
-                    .build();
-            imgShare.setShareContent(content);
-            btnSend.setShareContent(content);
+            try {
+                ShareLinkContent content = new ShareLinkContent.Builder()
+                        .setContentUrl(Uri.parse(recipe.getSourceURL()))
+                        .build();
+                imgShare.setShareContent(content);
+                btnSend.setShareContent(content);
+            } catch (Exception e){}
         }
     }
 }

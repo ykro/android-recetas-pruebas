@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -17,6 +18,7 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import edu.galileo.android.facebookrecipes.FacebookRecipesApp;
 import edu.galileo.android.facebookrecipes.R;
 import edu.galileo.android.facebookrecipes.entities.Recipe;
@@ -30,6 +32,9 @@ import edu.galileo.android.facebookrecipes.recipemain.ui.RecipeMainActivity;
 public class RecipeListActivity extends AppCompatActivity implements RecipeListView, OnItemClickListener {
     @Bind(R.id.recyclerView)
     RecyclerView recyclerView;
+
+    @Bind(R.id.toolbar)
+    Toolbar toolbar;
 
     @Inject
     RecipesAdapter adapter;
@@ -45,10 +50,21 @@ public class RecipeListActivity extends AppCompatActivity implements RecipeListV
         setContentView(R.layout.activity_recipe_list);
         ButterKnife.bind(this);
         setupInjection();
+
+        setupToolbar();
         setupRecyclerView();
 
         presenter.onCreate();
         presenter.getRecipes();
+    }
+
+    private void setupToolbar() {
+        setSupportActionBar(toolbar);
+    }
+
+    @OnClick(R.id.toolbar)
+    public void onToolbarClick(){
+        recyclerView.smoothScrollToPosition(0);
     }
 
     @Override
