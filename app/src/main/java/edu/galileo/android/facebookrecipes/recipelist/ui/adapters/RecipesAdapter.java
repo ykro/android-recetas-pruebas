@@ -118,13 +118,12 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.ViewHold
                 }
             });
 
-            try {
-                ShareLinkContent content = new ShareLinkContent.Builder()
-                        .setContentUrl(Uri.parse(recipe.getSourceURL()))
-                        .build();
-                imgShare.setShareContent(content);
-                btnSend.setShareContent(content);
-            } catch (Exception e){}
+
+            ShareLinkContent content = new ShareLinkContent.Builder()
+                    .setContentUrl(Uri.parse(recipe.getSourceURL()))
+                    .build();
+            imgShare.setShareContent(content);
+            btnSend.setShareContent(content);
         }
     }
 }

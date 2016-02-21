@@ -6,6 +6,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 
+import com.facebook.FacebookActivity;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -13,15 +15,18 @@ import org.mockito.Mock;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.internal.ShadowExtractor;
 import org.robolectric.shadows.ShadowActivity;
+import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.util.ActivityController;
 
 import java.util.Arrays;
 import java.util.List;
 
 import edu.galileo.android.facebookrecipes.BuildConfig;
+import edu.galileo.android.facebookrecipes.FacebookRecipesApp;
 import edu.galileo.android.facebookrecipes.R;
 import edu.galileo.android.facebookrecipes.entities.Recipe;
 import edu.galileo.android.facebookrecipes.lib.ImageLoader;
@@ -42,7 +47,8 @@ import static org.robolectric.Shadows.shadowOf;
  * Created by ykro.
  */
 @RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21, shadows = {ShadowRecyclerView.class, ShadowRecyclerViewAdapter.class})
+@Config(constants = BuildConfig.class, sdk = 21,
+        shadows = {ShadowRecyclerView.class, ShadowRecyclerViewAdapter.class})
 public class RecipeListActivityTest extends BaseRecipeListTest {
     @Mock
     RecipesAdapter adapter;
@@ -63,6 +69,11 @@ public class RecipeListActivityTest extends BaseRecipeListTest {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        FacebookRecipesApp app = (FacebookRecipesApp) RuntimeEnvironment.application;
+        ShadowApplication shadowApp = Shadows.shadowOf(app);
+        shadowApp.grantPermissions("android.permission.INTERNET");
+        app.onCreate();
+
         RecipeListActivity recipeListActivity = new RecipeListActivity(){
             @Override
             public void setTheme(int resid) {
@@ -86,7 +97,6 @@ public class RecipeListActivityTest extends BaseRecipeListTest {
         shadowActivity = shadowOf(activity);
         onItemClickListener = (OnItemClickListener)view;
     }
-
 
     @Test
     public void onActivityCreated_getsRecipesFromDataSource() {
@@ -157,10 +167,10 @@ public class RecipeListActivityTest extends BaseRecipeListTest {
 
     @Test
     public void recyclerView_itemClicked() {
-        List<Recipe> recipeList = getDataToPopulateAdapter();
+        List<Recipe> recipeList = getRecipesToPopulateAdapter();
         RecipesAdapter adapterPopulated = new RecipesAdapter(recipeList, imageLoader, onItemClickListener);
-        RecyclerView recyclerView = new RecyclerView(RuntimeEnvironment.application);
-        recyclerView.setLayoutManager(new LinearLayoutManager(RuntimeEnvironment.application));
+        RecyclerView recyclerView = new RecyclerView(activity);
+        recyclerView.setLayoutManager(new LinearLayoutManager(activity));
         recyclerView.setAdapter(adapterPopulated);
 
         int positionToClick = 0;
@@ -175,10 +185,10 @@ public class RecipeListActivityTest extends BaseRecipeListTest {
 
     @Test
     public void recyclerView_favoriteClicked() {
-        List<Recipe> recipeList = getDataToPopulateAdapter();
+        List<Recipe> recipeList = getRecipesToPopulateAdapter();
         RecipesAdapter adapterPopulated = new RecipesAdapter(recipeList, imageLoader, onItemClickListener);
-        RecyclerView recyclerView = new RecyclerView(RuntimeEnvironment.application);
-        recyclerView.setLayoutManager(new LinearLayoutManager(RuntimeEnvironment.application));
+        RecyclerView recyclerView = new RecyclerView(activity);
+        recyclerView.setLayoutManager(new LinearLayoutManager(activity));
         recyclerView.setAdapter(adapterPopulated);
 
         int positionToClick = 0;
@@ -191,10 +201,10 @@ public class RecipeListActivityTest extends BaseRecipeListTest {
 
     @Test
     public void recyclerView_removeClicked() {
-        List<Recipe> recipeList = getDataToPopulateAdapter();
+        List<Recipe> recipeList = getRecipesToPopulateAdapter();
         RecipesAdapter adapterPopulated = new RecipesAdapter(recipeList, imageLoader, onItemClickListener);
-        RecyclerView recyclerView = new RecyclerView(RuntimeEnvironment.application);
-        recyclerView.setLayoutManager(new LinearLayoutManager(RuntimeEnvironment.application));
+        RecyclerView recyclerView = new RecyclerView(activity);
+        recyclerView.setLayoutManager(new LinearLayoutManager(activity));
         recyclerView.setAdapter(adapterPopulated);
 
         int positionToClick = 0;
@@ -205,18 +215,44 @@ public class RecipeListActivityTest extends BaseRecipeListTest {
         verify(presenter).removeRecipe(recipeList.get(positionToClick));
     }
 
-    private List<Recipe> getDataToPopulateAdapter(){
+    @Test
+    public void recyclerView_fbShareClicked() {
+        List<Recipe> recipeList = getRecipesToPopulateAdapter();
+        RecipesAdapter adapterPopulated = new RecipesAdapter(recipeList, imageLoader, onItemClickListener);
+        RecyclerView recyclerView = new RecyclerView(activity);
+        recyclerView.setAdapter(adapterPopulated);
+        recyclerView.setLayoutManager(new LinearLayoutManager(activity));
+
+        int positionToClick = 0;
+        ShadowRecyclerViewAdapter shadowAdapter = (ShadowRecyclerViewAdapter) ShadowExtractor.extract(recyclerView.getAdapter());
+        shadowAdapter.itemVisible(positionToClick);
+        shadowAdapter.performClickOverViewInViewHolder(positionToClick, R.id.fbShare);
+
+        Intent intent = shadowActivity.peekNextStartedActivityForResult().intent;
+        assertEquals(intent.getComponent(), new ComponentName(RuntimeEnvironment.application, FacebookActivity.class));
+    }
+
+    @Test
+    public void recyclerView_fbSendClicked() {
+        List<Recipe> recipeList = getRecipesToPopulateAdapter();
+        RecipesAdapter adapterPopulated = new RecipesAdapter(recipeList, imageLoader, onItemClickListener);
+        RecyclerView recyclerView = new RecyclerView(activity);
+        recyclerView.setAdapter(adapterPopulated);
+        recyclerView.setLayoutManager(new LinearLayoutManager(activity));
+
+        int positionToClick = 0;
+        ShadowRecyclerViewAdapter shadowAdapter = (ShadowRecyclerViewAdapter) ShadowExtractor.extract(recyclerView.getAdapter());
+        shadowAdapter.itemVisible(positionToClick);
+        shadowAdapter.performClickOverViewInViewHolder(positionToClick, R.id.fbSend);
+
+        Intent intent = shadowActivity.peekNextStartedActivityForResult().intent;
+        assertEquals(intent.getComponent(), new ComponentName(RuntimeEnvironment.application, FacebookActivity.class));
+    }
+
+    private List<Recipe> getRecipesToPopulateAdapter(){
         Recipe recipe = new Recipe();
         recipe.setSourceURL("http://google.com");
-        /*
-        int random = (new Random()).nextInt(500);
-        boolean favorite = (random%2 == 0)? true : false;
-        recipe.setRecipeId("id " + random);
-        recipe.setTitle("title");
-        recipe.setImageURL("https://www.galileo.edu/wp-content/themes/galileo-template/html/img/logo.png");
-        recipe.setFavorite(favorite);
-        recipe.setSourceURL("http://google.com");
-        */
         return Arrays.asList(new Recipe[]{recipe});
     }
+
 }

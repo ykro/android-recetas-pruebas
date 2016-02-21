@@ -4,11 +4,16 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.ImageButton;
 
+import com.facebook.FacebookActivity;
+import com.facebook.share.model.ShareContent;
+import com.facebook.share.widget.SendButton;
+import com.facebook.share.widget.ShareButton;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.internal.ShadowExtractor;
 
@@ -24,6 +29,7 @@ import edu.galileo.android.facebookrecipes.recipelist.ui.adapters.RecipesAdapter
 import edu.galileo.android.facebookrecipes.support.ShadowRecyclerViewAdapter;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -39,8 +45,8 @@ public class RecipesAdapterTest extends BaseRecipeListTest {
     @Mock
     OnItemClickListener onItemClickListener;
 
-    RecyclerView recyclerView;
-    List<Recipe> recipeList = Arrays.asList(new Recipe[]{
+    private RecyclerView recyclerView;
+    private List<Recipe> recipeList = Arrays.asList(new Recipe[]{
             new Recipe(),
             new Recipe(),
             new Recipe()});
@@ -48,12 +54,14 @@ public class RecipesAdapterTest extends BaseRecipeListTest {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+
         for (Recipe recipe : recipeList) {
             recipe.setSourceURL("http://google.com");
         }
 
-        recyclerView = new RecyclerView(RuntimeEnvironment.application);
-        recyclerView.setLayoutManager(new LinearLayoutManager(RuntimeEnvironment.application));
+        FacebookActivity activity = Robolectric.setupActivity(FacebookActivity.class);
+        recyclerView = new RecyclerView(activity);
+        recyclerView.setLayoutManager(new LinearLayoutManager(activity));
 
         RecipesAdapter adapterPopulated = new RecipesAdapter(recipeList, imageLoader, onItemClickListener);
         recyclerView.setAdapter(adapterPopulated);
@@ -85,17 +93,6 @@ public class RecipesAdapterTest extends BaseRecipeListTest {
         shadowAdapter.performItemClick(positionToClick);
 
         verify(onItemClickListener).onItemClick(recipeList.get(positionToClick));
-    }
-
-    @Test
-    public void onFavoriteClick_listenerCalled() {
-        int positionToClick = 0;
-        ShadowRecyclerViewAdapter shadowAdapter = (ShadowRecyclerViewAdapter) ShadowExtractor.extract(recyclerView.getAdapter());
-
-        shadowAdapter.itemVisible(positionToClick);
-        shadowAdapter.performClickOverViewInViewHolder(positionToClick, R.id.imgFav);
-
-        verify(onItemClickListener).onFavClick(recipeList.get(positionToClick));
     }
 
     @Test
@@ -145,4 +142,33 @@ public class RecipesAdapterTest extends BaseRecipeListTest {
         verify(onItemClickListener).onDeleteClick(recipeList.get(positionToClick));
     }
 
+    public void onfbShareBind_shareContentSet() {
+        int positionToShow = 0;
+        Recipe recipeToShow = recipeList.get(positionToShow);
+
+        ShadowRecyclerViewAdapter shadowAdapter = (ShadowRecyclerViewAdapter) ShadowExtractor.extract(recyclerView.getAdapter());
+        shadowAdapter.itemVisible(positionToShow);
+        RecipesAdapter.ViewHolder viewHolder = (RecipesAdapter.ViewHolder) shadowAdapter.getViewHolderForPosition(positionToShow);
+
+        SendButton fbSend = (SendButton) viewHolder.itemView.findViewById(R.id.fbSend);
+        ShareContent shareContent = fbSend.getShareContent();
+        assertNotNull(shareContent);
+        String shareUrl = shareContent.getContentUrl().toString();
+        assertEquals(recipeToShow.getSourceURL(), shareUrl);
+    }
+
+    public void onfbSendBind_shareContentSet() {
+        int positionToShow = 0;
+        Recipe recipeToShow = recipeList.get(positionToShow);
+
+        ShadowRecyclerViewAdapter shadowAdapter = (ShadowRecyclerViewAdapter) ShadowExtractor.extract(recyclerView.getAdapter());
+        shadowAdapter.itemVisible(positionToShow);
+        RecipesAdapter.ViewHolder viewHolder = (RecipesAdapter.ViewHolder) shadowAdapter.getViewHolderForPosition(positionToShow);
+
+        ShareButton fbShare = (ShareButton) viewHolder.itemView.findViewById(R.id.fbShare);
+        ShareContent shareContent = fbShare.getShareContent();
+        assertNotNull(shareContent);
+        String shareUrl = shareContent.getContentUrl().toString();
+        assertEquals(recipeToShow.getSourceURL(), shareUrl);
+    }
 }
