@@ -35,6 +35,11 @@ public class RecipeMainPresenterImpl implements RecipeMainPresenter {
     }
 
     @Override
+    public RecipeMainView getView() {
+        return this.view;
+    }
+
+    @Override
     public void saveRecipe(Recipe recipe) {
         if (this.view != null){
             view.saveAnimation();
@@ -59,7 +64,6 @@ public class RecipeMainPresenterImpl implements RecipeMainPresenter {
             view.hideUIElements();
         }
         getNextRecipe.execute();
-
     }
 
     @Override

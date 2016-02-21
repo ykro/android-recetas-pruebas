@@ -25,6 +25,7 @@ import org.robolectric.util.ActivityController;
 import java.util.Arrays;
 import java.util.List;
 
+import edu.galileo.android.facebookrecipes.BaseTest;
 import edu.galileo.android.facebookrecipes.BuildConfig;
 import edu.galileo.android.facebookrecipes.FacebookRecipesApp;
 import edu.galileo.android.facebookrecipes.R;
@@ -49,7 +50,7 @@ import static org.robolectric.Shadows.shadowOf;
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21,
         shadows = {ShadowRecyclerView.class, ShadowRecyclerViewAdapter.class})
-public class RecipeListActivityTest extends BaseRecipeListTest {
+public class RecipeListActivityTest extends BaseTest {
     @Mock
     RecipesAdapter adapter;
 
@@ -137,14 +138,14 @@ public class RecipeListActivityTest extends BaseRecipeListTest {
     }
 
     @Test
-    public void logoutMenuClick() {
+    public void logoutMenuClicked_launchLoginActivity() {
         shadowActivity.clickMenuItem(R.id.action_logout);
         Intent intent = shadowActivity.peekNextStartedActivityForResult().intent;
         assertEquals(intent.getComponent(), new ComponentName(controller.get(), LoginActivity.class));
     }
 
     @Test
-    public void mainMenuClick() {
+    public void mainMenuClick_launchRecipeMainActivity() {
         shadowActivity.clickMenuItem(R.id.action_main);
         Intent intent = shadowActivity.peekNextStartedActivityForResult().intent;
         assertEquals(intent.getComponent(), new ComponentName(controller.get(), RecipeMainActivity.class));

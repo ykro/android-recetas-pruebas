@@ -16,48 +16,57 @@ import retrofit2.Response;
  * Created by ykro.
  */
 public class RecipeMainRepositoryImpl implements RecipeMainRepository {
-    EventBus eventBus;
-    RecipeService service;
-
-    private final static int COUNT = 1;
-    private final static String RECENT_SORT = "r";
+    private int recipePage;
+    private EventBus eventBus;
+    private RecipeService service;
 
     public RecipeMainRepositoryImpl(EventBus eventBus, RecipeService service) {
-        this.eventBus = eventBus;
         this.service = service;
+        this.eventBus = eventBus;
+    }
+
+    public void generateRecipePage() {
+        Random r = new Random();
+        this.recipePage = r.nextInt(RECIPE_RANGE);
+    }
+
+    @Override
+    public int getRecipePage() {
+        return recipePage;
     }
 
     @Override
     public void getNextRecipe() {
-        Random r = new Random();
-        int recipePage = r.nextInt(100000);
+        generateRecipePage();
         Call<RecipeSearchResponse> call = service.search(BuildConfig.FOOD_API_KEY, RECENT_SORT, COUNT, recipePage);
-        call.enqueue(new Callback<RecipeSearchResponse>() {
-            @Override
-            public void onResponse(Call<RecipeSearchResponse> call, Response<RecipeSearchResponse> response) {
-                if (response.isSuccess()) {
-                    RecipeSearchResponse recipeSearchResponse = response.body();
-                    if (recipeSearchResponse.getCount() == 0){
-                        getNextRecipe();
-                    } else {
-                        Recipe recipe = recipeSearchResponse.getFirstRecipe();
-                        if (recipe != null) {
-                            post(recipe);
+        if (call != null){
+            call.enqueue(new Callback<RecipeSearchResponse>() {
+                @Override
+                public void onResponse(Call<RecipeSearchResponse> call, Response<RecipeSearchResponse> response) {
+                    if (response.isSuccess()) {
+                        RecipeSearchResponse recipeSearchResponse = response.body();
+                        if (recipeSearchResponse.getCount() == 0){
+                            getNextRecipe();
                         } else {
-                            post(response.message(), RecipeMainEvent.NEXT_EVENT);
+                            Recipe recipe = recipeSearchResponse.getFirstRecipe();
+                            if (recipe != null) {
+                                post(recipe);
+                            } else {
+                                post(response.message(), RecipeMainEvent.NEXT_EVENT);
+                            }
+
                         }
-
+                    } else {
+                        post(response.message(), RecipeMainEvent.NEXT_EVENT);
                     }
-                } else {
-                    post(response.message(), RecipeMainEvent.NEXT_EVENT);
                 }
-            }
 
-            @Override
-            public void onFailure(Call<RecipeSearchResponse> call, Throwable t) {
-                post(t.getLocalizedMessage(), RecipeMainEvent.NEXT_EVENT);
-            }
-        });
+                @Override
+                public void onFailure(Call<RecipeSearchResponse> call, Throwable t) {
+                    post(t.getLocalizedMessage(), RecipeMainEvent.NEXT_EVENT);
+                }
+            });
+        }
     }
 
     @Override

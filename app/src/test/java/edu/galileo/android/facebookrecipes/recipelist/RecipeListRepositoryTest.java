@@ -14,6 +14,7 @@ import org.robolectric.annotation.Config;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.galileo.android.facebookrecipes.BaseTest;
 import edu.galileo.android.facebookrecipes.BuildConfig;
 import edu.galileo.android.facebookrecipes.FacebookRecipesApp;
 import edu.galileo.android.facebookrecipes.entities.Recipe;
@@ -31,7 +32,7 @@ import static org.mockito.Mockito.verify;
  */
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
-public class RecipeListRepositoryTest extends BaseRecipeListTest {
+public class RecipeListRepositoryTest extends BaseTest {
     @Mock
     private EventBus eventBus;
 

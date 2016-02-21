@@ -1,4 +1,4 @@
-package edu.galileo.android.facebookrecipes.recipelist;
+package edu.galileo.android.facebookrecipes;
 
 import org.junit.Before;
 import org.mockito.MockitoAnnotations;
@@ -6,7 +6,7 @@ import org.mockito.MockitoAnnotations;
 /**
  * Created by ykro.
  */
-public abstract class BaseRecipeListTest {
+public abstract class BaseTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);

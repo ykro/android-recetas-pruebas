@@ -10,7 +10,7 @@ import org.robolectric.shadows.ShadowViewGroup;
  * Created by ykro.
  */
 
-@Implements(value = RecyclerView.class, inheritImplementationMethods = true)
+@Implements(value = RecyclerView.class)
 public class ShadowRecyclerView extends ShadowViewGroup {
     private int smoothScrollPosition = -1;
 

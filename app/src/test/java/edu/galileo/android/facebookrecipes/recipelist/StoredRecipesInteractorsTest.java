@@ -3,6 +3,7 @@ package edu.galileo.android.facebookrecipes.recipelist;
 import org.junit.Test;
 import org.mockito.Mock;
 
+import edu.galileo.android.facebookrecipes.BaseTest;
 import edu.galileo.android.facebookrecipes.entities.Recipe;
 
 import static org.mockito.Mockito.verify;
@@ -10,7 +11,7 @@ import static org.mockito.Mockito.verify;
 /**
  * Created by ykro.
  */
-public class StoredRecipesInteractorsTest extends BaseRecipeListTest {
+public class StoredRecipesInteractorsTest extends BaseTest {
     @Mock
     private RecipeListRepository repository;
     private Recipe recipe = new Recipe();

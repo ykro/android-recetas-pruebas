@@ -2,6 +2,7 @@ package edu.galileo.android.facebookrecipes.recipemain;
 
 import edu.galileo.android.facebookrecipes.entities.Recipe;
 import edu.galileo.android.facebookrecipes.recipemain.events.RecipeMainEvent;
+import edu.galileo.android.facebookrecipes.recipemain.ui.RecipeMainView;
 
 /**
  * Created by ykro.
@@ -9,6 +10,8 @@ import edu.galileo.android.facebookrecipes.recipemain.events.RecipeMainEvent;
 public interface RecipeMainPresenter {
     void onCreate();
     void onDestroy();
+    RecipeMainView getView();
+
     void dismissRecipe();
     void getNextRecipe();
     void saveRecipe(Recipe recipe);

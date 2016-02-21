@@ -3,6 +3,7 @@ package edu.galileo.android.facebookrecipes.recipelist;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.facebook.FacebookActivity;
 import com.facebook.share.model.ShareContent;
@@ -20,6 +21,7 @@ import org.robolectric.internal.ShadowExtractor;
 import java.util.Arrays;
 import java.util.List;
 
+import edu.galileo.android.facebookrecipes.BaseTest;
 import edu.galileo.android.facebookrecipes.BuildConfig;
 import edu.galileo.android.facebookrecipes.R;
 import edu.galileo.android.facebookrecipes.entities.Recipe;
@@ -37,7 +39,7 @@ import static org.mockito.Mockito.verify;
  */
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21, shadows = {ShadowRecyclerViewAdapter.class})
-public class RecipesAdapterTest extends BaseRecipeListTest {
+public class RecipesAdapterTest extends BaseTest {
     @Mock
     List<Recipe> recipes;
     @Mock
@@ -93,6 +95,19 @@ public class RecipesAdapterTest extends BaseRecipeListTest {
         shadowAdapter.performItemClick(positionToClick);
 
         verify(onItemClickListener).onItemClick(recipeList.get(positionToClick));
+    }
+
+    @Test
+    public void ViewHolderRendersTitle() {
+        int positionToShow = 0;
+        Recipe recipeToShow = recipeList.get(positionToShow);
+        recipeToShow.setTitle("title");
+
+        ShadowRecyclerViewAdapter shadowAdapter = (ShadowRecyclerViewAdapter) ShadowExtractor.extract(recyclerView.getAdapter());
+        shadowAdapter.itemVisible(positionToShow);
+        RecipesAdapter.ViewHolder viewHolder = (RecipesAdapter.ViewHolder) shadowAdapter.getViewHolderForPosition(positionToShow);
+        TextView txtRecipeName = (TextView) viewHolder.itemView.findViewById(R.id.txtRecipeName);
+        assertEquals(recipeToShow.getTitle(),txtRecipeName.getText().toString());
     }
 
     @Test

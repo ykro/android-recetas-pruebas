@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import java.util.Arrays;
 import java.util.List;
 
+import edu.galileo.android.facebookrecipes.BaseTest;
 import edu.galileo.android.facebookrecipes.entities.Recipe;
 import edu.galileo.android.facebookrecipes.lib.EventBus;
 import edu.galileo.android.facebookrecipes.recipelist.events.RecipeListEvent;
@@ -19,7 +20,7 @@ import static org.mockito.Mockito.verify;
 /**
  * Created by ykro.
  */
-public class RecipeListPresenterTest extends BaseRecipeListTest {
+public class RecipeListPresenterTest extends BaseTest {
     @Mock
     private EventBus eventBus;
     @Mock

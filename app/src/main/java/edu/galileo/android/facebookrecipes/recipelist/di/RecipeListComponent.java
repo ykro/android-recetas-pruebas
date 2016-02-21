@@ -5,7 +5,6 @@ import javax.inject.Singleton;
 import dagger.Component;
 import edu.galileo.android.facebookrecipes.lib.di.LibsModule;
 import edu.galileo.android.facebookrecipes.recipelist.RecipeListPresenter;
-import edu.galileo.android.facebookrecipes.recipelist.ui.RecipeListActivity;
 import edu.galileo.android.facebookrecipes.recipelist.ui.adapters.RecipesAdapter;
 
 /**
@@ -14,7 +13,7 @@ import edu.galileo.android.facebookrecipes.recipelist.ui.adapters.RecipesAdapter
 @Singleton
 @Component(modules = {RecipeListModule.class, LibsModule.class})
 public interface RecipeListComponent {
-    void inject(RecipeListActivity activity);
+    //void inject(RecipeListActivity activity);
     RecipesAdapter getAdapter();
     RecipeListPresenter getPresenter();
 }

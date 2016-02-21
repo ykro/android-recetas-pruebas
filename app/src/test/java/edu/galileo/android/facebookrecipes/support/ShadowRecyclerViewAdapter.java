@@ -11,8 +11,6 @@ import org.robolectric.annotation.RealObject;
 /**
  *
  */
-
-//@Implements(value = RecyclerView.Adapter.class, inheritImplementationMethods = true)
 @Implements(RecyclerView.Adapter.class)
 public class ShadowRecyclerViewAdapter {
     @RealObject
