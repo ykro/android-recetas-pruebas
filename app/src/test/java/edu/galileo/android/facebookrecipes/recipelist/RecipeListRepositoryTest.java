@@ -106,6 +106,7 @@ public class RecipeListRepositoryTest extends BaseTest {
         recipe.setTitle(titleAfter);
 
         repository.updateRecipe(recipe);
+
         Recipe recipeFromDB = new Select()
                 .from(Recipe.class)
                 .where(Recipe_Table.recipeId.is(newRecipeId))
@@ -125,6 +126,7 @@ public class RecipeListRepositoryTest extends BaseTest {
         recipe.save();
 
         repository.removeRecipe(recipe);
+
         verify(eventBus).post(recipeListEventArgumentCaptor.capture());
         assertFalse(recipe.exists());
 

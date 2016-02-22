@@ -15,11 +15,9 @@ import org.mockito.Mock;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.internal.ShadowExtractor;
 import org.robolectric.shadows.ShadowActivity;
-import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.util.ActivityController;
 
 import java.util.Arrays;
@@ -27,7 +25,6 @@ import java.util.List;
 
 import edu.galileo.android.facebookrecipes.BaseTest;
 import edu.galileo.android.facebookrecipes.BuildConfig;
-import edu.galileo.android.facebookrecipes.FacebookRecipesApp;
 import edu.galileo.android.facebookrecipes.R;
 import edu.galileo.android.facebookrecipes.entities.Recipe;
 import edu.galileo.android.facebookrecipes.lib.ImageLoader;
@@ -52,13 +49,13 @@ import static org.robolectric.Shadows.shadowOf;
         shadows = {ShadowRecyclerView.class, ShadowRecyclerViewAdapter.class})
 public class RecipeListActivityTest extends BaseTest {
     @Mock
-    RecipesAdapter adapter;
+    private RecipesAdapter adapter;
 
     @Mock
-    RecipeListPresenter presenter;
+    private RecipeListPresenter presenter;
 
     @Mock
-    ImageLoader imageLoader;
+    private ImageLoader imageLoader;
 
     private RecipeListView view;
     private RecipeListActivity activity;
@@ -70,10 +67,6 @@ public class RecipeListActivityTest extends BaseTest {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        FacebookRecipesApp app = (FacebookRecipesApp) RuntimeEnvironment.application;
-        ShadowApplication shadowApp = Shadows.shadowOf(app);
-        shadowApp.grantPermissions("android.permission.INTERNET");
-        app.onCreate();
 
         RecipeListActivity recipeListActivity = new RecipeListActivity(){
             @Override
@@ -94,9 +87,10 @@ public class RecipeListActivityTest extends BaseTest {
 
         controller = ActivityController.of(Robolectric.getShadowsAdapter(), recipeListActivity).create().visible();
         activity = controller.get();
-        view = (RecipeListView)activity;
         shadowActivity = shadowOf(activity);
-        onItemClickListener = (OnItemClickListener)view;
+
+        view = (RecipeListView)activity;
+        onItemClickListener  = (OnItemClickListener)activity;
     }
 
     @Test
@@ -218,6 +212,8 @@ public class RecipeListActivityTest extends BaseTest {
 
     @Test
     public void recyclerView_fbShareClicked() {
+
+
         List<Recipe> recipeList = getRecipesToPopulateAdapter();
         RecipesAdapter adapterPopulated = new RecipesAdapter(recipeList, imageLoader, onItemClickListener);
         RecyclerView recyclerView = new RecyclerView(activity);

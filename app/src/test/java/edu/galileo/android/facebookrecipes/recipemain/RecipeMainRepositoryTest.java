@@ -31,7 +31,7 @@ public class RecipeMainRepositoryTest extends BaseTest {
     private EventBus eventBus;
 
     @Mock
-    RecipeService service;
+    private RecipeService service;
 
     private RecipeMainRepository repository;
     private ArgumentCaptor<RecipeMainEvent> recipeMainEventArgumentCaptor;

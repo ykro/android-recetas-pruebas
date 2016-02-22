@@ -27,7 +27,7 @@ import static junit.framework.Assert.assertTrue;
 @Config(constants = BuildConfig.class, sdk = 21)
 public class RecipeServiceTest extends BaseTest {
 
-    RecipeService service;
+    private RecipeService service;
 
     @Override
     public void setUp() throws Exception {

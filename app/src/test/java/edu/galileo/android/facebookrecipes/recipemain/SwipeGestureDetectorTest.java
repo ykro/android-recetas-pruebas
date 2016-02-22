@@ -25,9 +25,9 @@ import static org.mockito.Mockito.verify;
         shadows = {ShadowRecyclerView.class, ShadowRecyclerViewAdapter.class})
 public class SwipeGestureDetectorTest extends BaseTest {
     @Mock
-    SwipeGestureListener listener;
+    private SwipeGestureListener listener;
 
-    SwipeGestureDetector detector;
+    private SwipeGestureDetector detector;
 
     @Override
     public void setUp() throws Exception {

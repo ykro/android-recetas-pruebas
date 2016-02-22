@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
+import org.robolectric.fakes.RoboMenu;
 import org.robolectric.internal.ShadowExtractor;
 import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.util.ActivityController;
@@ -23,9 +24,9 @@ import edu.galileo.android.facebookrecipes.R;
 import edu.galileo.android.facebookrecipes.entities.Recipe;
 import edu.galileo.android.facebookrecipes.lib.ImageLoader;
 import edu.galileo.android.facebookrecipes.login.ui.LoginActivity;
+import edu.galileo.android.facebookrecipes.recipelist.ui.RecipeListActivity;
 import edu.galileo.android.facebookrecipes.recipemain.ui.RecipeMainActivity;
 import edu.galileo.android.facebookrecipes.recipemain.ui.RecipeMainView;
-import edu.galileo.android.facebookrecipes.recipemain.ui.SwipeGestureListener;
 import edu.galileo.android.facebookrecipes.support.ShadowImageView;
 
 import static junit.framework.Assert.assertEquals;
@@ -41,15 +42,13 @@ import static org.robolectric.Shadows.shadowOf;
         shadows = {ShadowImageView.class})
 public class RecipeMainActivityTest extends BaseTest {
     @Mock
-    ImageLoader imageLoader;
+    private ImageLoader imageLoader;
 
     @Mock
-    RecipeMainPresenter presenter;
+    private RecipeMainPresenter presenter;
 
     private RecipeMainView view;
     private RecipeMainActivity activity;
-    private SwipeGestureListener swipeGestureListener;
-
     private ShadowActivity shadowActivity;
     private ActivityController<RecipeMainActivity> controller;
 
@@ -74,7 +73,6 @@ public class RecipeMainActivityTest extends BaseTest {
         activity = controller.get();
         view = (RecipeMainView)activity;
         shadowActivity = shadowOf(activity);
-        swipeGestureListener = (SwipeGestureListener)activity;
     }
 
     @Test
@@ -136,6 +134,8 @@ public class RecipeMainActivityTest extends BaseTest {
 
     @Test
     public void logoutMenuClicked_launchLoginActivity() {
+        shadowActivity.onCreateOptionsMenu(new RoboMenu());
+
         shadowActivity.clickMenuItem(R.id.action_logout);
         Intent intent = shadowActivity.peekNextStartedActivityForResult().intent;
         assertEquals(intent.getComponent(), new ComponentName(controller.get(), LoginActivity.class));
@@ -143,9 +143,11 @@ public class RecipeMainActivityTest extends BaseTest {
 
     @Test
     public void favoriteListMenuClick_launchRecipeListActivity() {
+        shadowActivity.onCreateOptionsMenu(new RoboMenu());
+
         shadowActivity.clickMenuItem(R.id.action_list);
         Intent intent = shadowActivity.peekNextStartedActivityForResult().intent;
-        assertEquals(intent.getComponent(), new ComponentName(controller.get(), RecipeMainActivity.class));
+        assertEquals(intent.getComponent(), new ComponentName(controller.get(), RecipeListActivity.class));
     }
 
     @Test

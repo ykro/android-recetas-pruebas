@@ -1,11 +1,11 @@
 package edu.galileo.android.facebookrecipes.recipelist;
 
+import android.app.Activity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.facebook.FacebookActivity;
 import com.facebook.share.model.ShareContent;
 import com.facebook.share.widget.SendButton;
 import com.facebook.share.widget.ShareButton;
@@ -33,6 +33,7 @@ import edu.galileo.android.facebookrecipes.support.ShadowRecyclerViewAdapter;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by ykro.
@@ -41,37 +42,36 @@ import static org.mockito.Mockito.verify;
 @Config(constants = BuildConfig.class, sdk = 21, shadows = {ShadowRecyclerViewAdapter.class})
 public class RecipesAdapterTest extends BaseTest {
     @Mock
-    List<Recipe> recipes;
+    private List<Recipe> recipes;
     @Mock
-    ImageLoader imageLoader;
+    private ImageLoader imageLoader;
     @Mock
-    OnItemClickListener onItemClickListener;
+    private OnItemClickListener onItemClickListener;
 
-    private RecyclerView recyclerView;
-    private List<Recipe> recipeList = Arrays.asList(new Recipe[]{
-            new Recipe(),
-            new Recipe(),
-            new Recipe()});
+    private Recipe recipe;
+    private RecipesAdapter adapter;
+    private ShadowRecyclerViewAdapter shadowAdapter;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        recipe = new Recipe();
+        recipe.setSourceURL("http://google.com");
 
-        for (Recipe recipe : recipeList) {
-            recipe.setSourceURL("http://google.com");
-        }
+        adapter = new RecipesAdapter(recipes, imageLoader, onItemClickListener);
+        shadowAdapter = (ShadowRecyclerViewAdapter) ShadowExtractor.extract(adapter);
 
-        FacebookActivity activity = Robolectric.setupActivity(FacebookActivity.class);
-        recyclerView = new RecyclerView(activity);
+        Activity activity = Robolectric.setupActivity(Activity.class);
+        RecyclerView recyclerView = new RecyclerView(activity);
         recyclerView.setLayoutManager(new LinearLayoutManager(activity));
 
-        RecipesAdapter adapterPopulated = new RecipesAdapter(recipeList, imageLoader, onItemClickListener);
-        recyclerView.setAdapter(adapterPopulated);
+        recyclerView.setAdapter(adapter);
     }
 
     @Test
     public void setRecipes_itemCountMatch() {
-        RecipesAdapter adapter = new RecipesAdapter(recipeList, imageLoader, onItemClickListener);
+        List<Recipe> recipeList = Arrays.asList(new Recipe[]{recipe, recipe, recipe});
+        when(recipes.size()).thenReturn(recipeList.size());
 
         adapter.setRecipes(recipeList);
 
@@ -80,8 +80,6 @@ public class RecipesAdapterTest extends BaseTest {
 
     @Test
     public void removeRecipe_isRemovingFromAdapter() {
-        RecipesAdapter adapter = new RecipesAdapter(recipes, imageLoader, onItemClickListener);
-        Recipe recipe = new Recipe();
         adapter.removeRecipe(recipe);
         verify(recipes).remove(recipe);
     }
@@ -89,35 +87,35 @@ public class RecipesAdapterTest extends BaseTest {
     @Test
     public void onItemClick_listenerCalled() {
         int positionToClick = 0;
-        ShadowRecyclerViewAdapter shadowAdapter = (ShadowRecyclerViewAdapter) ShadowExtractor.extract(recyclerView.getAdapter());
+
+        when(recipes.get(positionToClick)).thenReturn(recipe);
 
         shadowAdapter.itemVisible(positionToClick);
         shadowAdapter.performItemClick(positionToClick);
 
-        verify(onItemClickListener).onItemClick(recipeList.get(positionToClick));
+        verify(onItemClickListener).onItemClick(recipe);
     }
 
     @Test
     public void ViewHolderRendersTitle() {
         int positionToShow = 0;
-        Recipe recipeToShow = recipeList.get(positionToShow);
-        recipeToShow.setTitle("title");
+        recipe.setTitle("title");
+        when(recipes.get(positionToShow)).thenReturn(recipe);
 
-        ShadowRecyclerViewAdapter shadowAdapter = (ShadowRecyclerViewAdapter) ShadowExtractor.extract(recyclerView.getAdapter());
         shadowAdapter.itemVisible(positionToShow);
+
         RecipesAdapter.ViewHolder viewHolder = (RecipesAdapter.ViewHolder) shadowAdapter.getViewHolderForPosition(positionToShow);
         TextView txtRecipeName = (TextView) viewHolder.itemView.findViewById(R.id.txtRecipeName);
-        assertEquals(recipeToShow.getTitle(),txtRecipeName.getText().toString());
+        assertEquals(recipe.getTitle(),txtRecipeName.getText().toString());
     }
 
     @Test
     public void onFavoriteClick_viewHolderImageChanged() {
         int positionToClick = 0;
-        Recipe recipeToClick = recipeList.get(positionToClick);
         boolean favorite = true;
-        recipeToClick.setFavorite(favorite);
+        recipe.setFavorite(favorite);
+        when(recipes.get(positionToClick)).thenReturn(recipe);
 
-        ShadowRecyclerViewAdapter shadowAdapter = (ShadowRecyclerViewAdapter) ShadowExtractor.extract(recyclerView.getAdapter());
         shadowAdapter.itemVisible(positionToClick);
         shadowAdapter.performClickOverViewInViewHolder(positionToClick, R.id.imgFav);
 
@@ -131,11 +129,10 @@ public class RecipesAdapterTest extends BaseTest {
     @Test
     public void onNonFavoriteClick_viewHolderImageChanged() {
         int positionToClick = 0;
-        Recipe recipeToClick = recipeList.get(positionToClick);
         boolean favorite = false;
-        recipeToClick.setFavorite(favorite);
+        recipe.setFavorite(favorite);
+        when(recipes.get(positionToClick)).thenReturn(recipe);
 
-        ShadowRecyclerViewAdapter shadowAdapter = (ShadowRecyclerViewAdapter) ShadowExtractor.extract(recyclerView.getAdapter());
         shadowAdapter.itemVisible(positionToClick);
         shadowAdapter.performClickOverViewInViewHolder(positionToClick, R.id.imgFav);
 
@@ -149,19 +146,18 @@ public class RecipesAdapterTest extends BaseTest {
     @Test
     public void onDeleteClick_listenerCalled() {
         int positionToClick = 0;
-        ShadowRecyclerViewAdapter shadowAdapter = (ShadowRecyclerViewAdapter) ShadowExtractor.extract(recyclerView.getAdapter());
+        when(recipes.get(positionToClick)).thenReturn(recipe);
 
         shadowAdapter.itemVisible(positionToClick);
         shadowAdapter.performClickOverViewInViewHolder(positionToClick, R.id.imgDelete);
 
-        verify(onItemClickListener).onDeleteClick(recipeList.get(positionToClick));
+        verify(onItemClickListener).onDeleteClick(recipe);
     }
 
     public void onfbShareBind_shareContentSet() {
         int positionToShow = 0;
-        Recipe recipeToShow = recipeList.get(positionToShow);
+        when(recipes.get(positionToShow)).thenReturn(recipe);
 
-        ShadowRecyclerViewAdapter shadowAdapter = (ShadowRecyclerViewAdapter) ShadowExtractor.extract(recyclerView.getAdapter());
         shadowAdapter.itemVisible(positionToShow);
         RecipesAdapter.ViewHolder viewHolder = (RecipesAdapter.ViewHolder) shadowAdapter.getViewHolderForPosition(positionToShow);
 
@@ -169,14 +165,13 @@ public class RecipesAdapterTest extends BaseTest {
         ShareContent shareContent = fbSend.getShareContent();
         assertNotNull(shareContent);
         String shareUrl = shareContent.getContentUrl().toString();
-        assertEquals(recipeToShow.getSourceURL(), shareUrl);
+        assertEquals(recipe.getSourceURL(), shareUrl);
     }
 
     public void onfbSendBind_shareContentSet() {
         int positionToShow = 0;
-        Recipe recipeToShow = recipeList.get(positionToShow);
+        when(recipes.get(positionToShow)).thenReturn(recipe);
 
-        ShadowRecyclerViewAdapter shadowAdapter = (ShadowRecyclerViewAdapter) ShadowExtractor.extract(recyclerView.getAdapter());
         shadowAdapter.itemVisible(positionToShow);
         RecipesAdapter.ViewHolder viewHolder = (RecipesAdapter.ViewHolder) shadowAdapter.getViewHolderForPosition(positionToShow);
 
@@ -184,6 +179,6 @@ public class RecipesAdapterTest extends BaseTest {
         ShareContent shareContent = fbShare.getShareContent();
         assertNotNull(shareContent);
         String shareUrl = shareContent.getContentUrl().toString();
-        assertEquals(recipeToShow.getSourceURL(), shareUrl);
+        assertEquals(recipe.getSourceURL(), shareUrl);
     }
 }
