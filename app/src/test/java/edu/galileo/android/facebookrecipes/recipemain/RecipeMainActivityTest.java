@@ -13,7 +13,6 @@ import org.mockito.Mock;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
-import org.robolectric.fakes.RoboMenu;
 import org.robolectric.internal.ShadowExtractor;
 import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.util.ActivityController;
@@ -134,8 +133,6 @@ public class RecipeMainActivityTest extends BaseTest {
 
     @Test
     public void logoutMenuClicked_launchLoginActivity() {
-        shadowActivity.onCreateOptionsMenu(new RoboMenu());
-
         shadowActivity.clickMenuItem(R.id.action_logout);
         Intent intent = shadowActivity.peekNextStartedActivityForResult().intent;
         assertEquals(intent.getComponent(), new ComponentName(controller.get(), LoginActivity.class));
@@ -143,8 +140,6 @@ public class RecipeMainActivityTest extends BaseTest {
 
     @Test
     public void favoriteListMenuClick_launchRecipeListActivity() {
-        shadowActivity.onCreateOptionsMenu(new RoboMenu());
-
         shadowActivity.clickMenuItem(R.id.action_list);
         Intent intent = shadowActivity.peekNextStartedActivityForResult().intent;
         assertEquals(intent.getComponent(), new ComponentName(controller.get(), RecipeListActivity.class));
