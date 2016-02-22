@@ -23,12 +23,12 @@ public class RecipeMainRepositoryImpl implements RecipeMainRepository {
     public RecipeMainRepositoryImpl(EventBus eventBus, RecipeService service) {
         this.eventBus = eventBus;
         this.service = service;
-        this.recipePage = (new Random()).nextInt(RECIPE_RANGE);
+        this.recipePage = new Random().nextInt(RECIPE_RANGE);
     }
 
     @Override
-    public int getRecipePage() {
-        return this.recipePage;
+    public void setRecipePage(int recipePage) {
+        this.recipePage = recipePage;
     }
 
     @Override
@@ -40,6 +40,7 @@ public class RecipeMainRepositoryImpl implements RecipeMainRepository {
                 if (response.isSuccess()) {
                     RecipeSearchResponse recipeSearchResponse = response.body();
                     if (recipeSearchResponse.getCount() == 0){
+                        setRecipePage(new Random().nextInt(RECIPE_RANGE));
                         getNextRecipe();
                     } else {
                         Recipe recipe = recipeSearchResponse.getFirstRecipe();

@@ -74,12 +74,13 @@ public class RecipeMainRepositoryTest extends BaseTest {
         recipe.setRecipeId("id");
         recipe.setSourceURL("http://google.com");
 
-        int recipePage = repository.getRecipePage();
+        int recipePage = new Random().nextInt(RecipeMainRepository.RECIPE_RANGE);
 
         when(service.search(BuildConfig.FOOD_API_KEY,
                             RecipeMainRepository.RECENT_SORT,
                             RecipeMainRepository.COUNT, recipePage)).thenReturn(buildSuccessCall(recipe));
 
+        repository.setRecipePage(recipePage);
         repository.getNextRecipe();
 
         verify(service).search(BuildConfig.FOOD_API_KEY, RecipeMainRepository.RECENT_SORT, RecipeMainRepository.COUNT, recipePage);
@@ -92,12 +93,14 @@ public class RecipeMainRepositoryTest extends BaseTest {
 
     @Test
     public void getNextRecipeCalled_apiServiceFailedCallEventPosted() {
-        int recipePage = repository.getRecipePage();
+        int recipePage = new Random().nextInt(RecipeMainRepository.RECIPE_RANGE);
         String error = "error";
+
         when(service.search(BuildConfig.FOOD_API_KEY,
                 RecipeMainRepository.RECENT_SORT,
                 RecipeMainRepository.COUNT, recipePage)).thenReturn(buildFailedCall(error));
 
+        repository.setRecipePage(recipePage);
         repository.getNextRecipe();
 
         verify(service).search(BuildConfig.FOOD_API_KEY, RecipeMainRepository.RECENT_SORT, RecipeMainRepository.COUNT, recipePage);
