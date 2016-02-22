@@ -14,14 +14,6 @@ public class RecipeListEvent {
     public final static int UPDATE_EVENT = 1;
     public final static int DELETE_EVENT = 2;
 
-    public RecipeListEvent() {
-    }
-
-    public RecipeListEvent(int type, List<Recipe> recipes) {
-        this.type = type;
-        this.recipes = recipes;
-    }
-
     public int getType() {
         return type;
     }

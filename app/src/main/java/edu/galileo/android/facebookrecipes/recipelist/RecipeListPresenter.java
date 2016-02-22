@@ -10,10 +10,11 @@ import edu.galileo.android.facebookrecipes.recipelist.ui.RecipeListView;
 public interface RecipeListPresenter {
     void onCreate();
     void onDestroy();
-    RecipeListView getView();
 
     void getRecipes();
     void removeRecipe(Recipe recipe);
     void toggleFavorite(Recipe recipe);
     void onEventMainThread(RecipeListEvent event);
+
+    RecipeListView getView();
 }

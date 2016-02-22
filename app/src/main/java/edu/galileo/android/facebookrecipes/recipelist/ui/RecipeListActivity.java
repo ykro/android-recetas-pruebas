@@ -14,8 +14,6 @@ import com.facebook.login.LoginManager;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -30,18 +28,14 @@ import edu.galileo.android.facebookrecipes.recipelist.ui.adapters.RecipesAdapter
 import edu.galileo.android.facebookrecipes.recipemain.ui.RecipeMainActivity;
 
 public class RecipeListActivity extends AppCompatActivity implements RecipeListView, OnItemClickListener {
+    @Bind(R.id.toolbar)
+    Toolbar toolbar;
+    
     @Bind(R.id.recyclerView)
     RecyclerView recyclerView;
 
-    @Bind(R.id.toolbar)
-    Toolbar toolbar;
-
-    @Inject
-    RecipesAdapter adapter;
-
-    @Inject
-    RecipeListPresenter presenter;
-
+    private RecipesAdapter adapter;
+    private RecipeListPresenter presenter;
     private RecipeListComponent component;
 
     @Override
@@ -49,11 +43,9 @@ public class RecipeListActivity extends AppCompatActivity implements RecipeListV
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_list);
         ButterKnife.bind(this);
-        setupInjection();
-
         setupToolbar();
+        setupInjection();
         setupRecyclerView();
-
         presenter.onCreate();
         presenter.getRecipes();
     }
@@ -76,7 +68,7 @@ public class RecipeListActivity extends AppCompatActivity implements RecipeListV
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_recipes_list, menu);
-        return super.onCreateOptionsMenu(menu);
+        return true;
     }
 
     @Override
@@ -111,8 +103,8 @@ public class RecipeListActivity extends AppCompatActivity implements RecipeListV
         FacebookRecipesApp app = (FacebookRecipesApp)getApplication();
         component = app.getRecipeListComponent(this, this, this);
         //app.getRecipeListComponent(this, this, this).inject(this);
-        adapter = getAdapter();
         presenter = getPresenter();
+        adapter = getAdapter();
     }
 
     public RecipesAdapter getAdapter() {

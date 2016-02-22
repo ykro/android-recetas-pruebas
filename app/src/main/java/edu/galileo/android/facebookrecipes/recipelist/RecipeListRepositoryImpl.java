@@ -1,6 +1,6 @@
 package edu.galileo.android.facebookrecipes.recipelist;
 
-import com.raizlabs.android.dbflow.sql.language.Select;
+import com.raizlabs.android.dbflow.list.FlowCursorList;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,10 +21,8 @@ public class RecipeListRepositoryImpl implements RecipeListRepository {
 
     @Override
     public void getSavedRecipes() {
-        List<Recipe> recipeList = new Select()
-                                    .from(Recipe.class)
-                                    .queryList();
-        post(RecipeListEvent.READ_EVENT, recipeList);
+        FlowCursorList<Recipe> storedRecipes = new FlowCursorList<Recipe>(true, Recipe.class);
+        post(RecipeListEvent.READ_EVENT, storedRecipes.getAll());
     }
 
     @Override

@@ -64,6 +64,7 @@ public class RecipeMainPresenterImpl implements RecipeMainPresenter {
             view.hideUIElements();
         }
         getNextRecipe.execute();
+
     }
 
     @Override

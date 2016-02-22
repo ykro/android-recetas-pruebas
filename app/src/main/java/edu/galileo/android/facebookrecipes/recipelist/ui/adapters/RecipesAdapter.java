@@ -48,7 +48,7 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.ViewHold
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.row_stored_recipes, parent, false);
+                .inflate(R.layout.row_stored_recipes, parent, false);
         ViewHolder vh = new ViewHolder(v);
         return vh;
     }
@@ -117,7 +117,6 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.ViewHold
                     listener.onDeleteClick(recipe);
                 }
             });
-
 
             ShareLinkContent content = new ShareLinkContent.Builder()
                     .setContentUrl(Uri.parse(recipe.getSourceURL()))

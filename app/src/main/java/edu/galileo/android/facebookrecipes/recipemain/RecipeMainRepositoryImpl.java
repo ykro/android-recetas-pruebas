@@ -21,52 +21,45 @@ public class RecipeMainRepositoryImpl implements RecipeMainRepository {
     private RecipeService service;
 
     public RecipeMainRepositoryImpl(EventBus eventBus, RecipeService service) {
-        this.service = service;
         this.eventBus = eventBus;
-    }
-
-    public void generateRecipePage() {
-        Random r = new Random();
-        this.recipePage = r.nextInt(RECIPE_RANGE);
+        this.service = service;
+        this.recipePage = (new Random()).nextInt(RECIPE_RANGE);
     }
 
     @Override
     public int getRecipePage() {
-        return recipePage;
+        return this.recipePage;
     }
 
     @Override
     public void getNextRecipe() {
-        generateRecipePage();
         Call<RecipeSearchResponse> call = service.search(BuildConfig.FOOD_API_KEY, RECENT_SORT, COUNT, recipePage);
-        if (call != null){
-            call.enqueue(new Callback<RecipeSearchResponse>() {
-                @Override
-                public void onResponse(Call<RecipeSearchResponse> call, Response<RecipeSearchResponse> response) {
-                    if (response.isSuccess()) {
-                        RecipeSearchResponse recipeSearchResponse = response.body();
-                        if (recipeSearchResponse.getCount() == 0){
-                            getNextRecipe();
-                        } else {
-                            Recipe recipe = recipeSearchResponse.getFirstRecipe();
-                            if (recipe != null) {
-                                post(recipe);
-                            } else {
-                                post(response.message(), RecipeMainEvent.NEXT_EVENT);
-                            }
-
-                        }
+        call.enqueue(new Callback<RecipeSearchResponse>() {
+            @Override
+            public void onResponse(Call<RecipeSearchResponse> call, Response<RecipeSearchResponse> response) {
+                if (response.isSuccess()) {
+                    RecipeSearchResponse recipeSearchResponse = response.body();
+                    if (recipeSearchResponse.getCount() == 0){
+                        getNextRecipe();
                     } else {
-                        post(response.message(), RecipeMainEvent.NEXT_EVENT);
-                    }
-                }
+                        Recipe recipe = recipeSearchResponse.getFirstRecipe();
+                        if (recipe != null) {
+                            post(recipe);
+                        } else {
+                            post(response.message(), RecipeMainEvent.NEXT_EVENT);
+                        }
 
-                @Override
-                public void onFailure(Call<RecipeSearchResponse> call, Throwable t) {
-                    post(t.getLocalizedMessage(), RecipeMainEvent.NEXT_EVENT);
+                    }
+                } else {
+                    post(response.message(), RecipeMainEvent.NEXT_EVENT);
                 }
-            });
-        }
+            }
+
+            @Override
+            public void onFailure(Call<RecipeSearchResponse> call, Throwable t) {
+                post(t.getLocalizedMessage(), RecipeMainEvent.NEXT_EVENT);
+            }
+        });
     }
 
     @Override

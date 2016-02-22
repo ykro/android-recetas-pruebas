@@ -10,10 +10,11 @@ import edu.galileo.android.facebookrecipes.recipemain.ui.RecipeMainView;
 public interface RecipeMainPresenter {
     void onCreate();
     void onDestroy();
-    RecipeMainView getView();
 
     void dismissRecipe();
     void getNextRecipe();
     void saveRecipe(Recipe recipe);
     void onEventMainThread(RecipeMainEvent event);
+
+    RecipeMainView getView();
 }

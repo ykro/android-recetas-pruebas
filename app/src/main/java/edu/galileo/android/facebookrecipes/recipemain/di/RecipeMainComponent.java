@@ -16,5 +16,4 @@ public interface RecipeMainComponent {
     //void inject(RecipeMainActivity activity);
     ImageLoader getImageLoader();
     RecipeMainPresenter getPresenter();
-
 }

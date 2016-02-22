@@ -136,8 +136,8 @@ public class RecipeMainActivity extends AppCompatActivity implements RecipeMainV
 
     private void setupInjection() {
         FacebookRecipesApp app = (FacebookRecipesApp)getApplication();
-        component = app.getRecipeMainComponent(this, this);
         //app.getRecipeMainComponent(this, this).inject(this);
+        component = app.getRecipeMainComponent(this, this);
         imageLoader = getImageLoader();
         presenter = getPresenter();
     }

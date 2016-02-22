@@ -14,6 +14,6 @@ import edu.galileo.android.facebookrecipes.recipelist.ui.adapters.RecipesAdapter
 @Component(modules = {RecipeListModule.class, LibsModule.class})
 public interface RecipeListComponent {
     //void inject(RecipeListActivity activity);
-    RecipesAdapter getAdapter();
     RecipeListPresenter getPresenter();
+    RecipesAdapter getAdapter();
 }

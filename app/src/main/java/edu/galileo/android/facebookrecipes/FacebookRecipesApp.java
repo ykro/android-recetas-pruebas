@@ -36,12 +36,12 @@ public class FacebookRecipesApp extends Application {
         DBTearDown();
     }
 
-    private void DBTearDown() {
-        FlowManager.destroy();
-    }
-
     private void initDB() {
         FlowManager.init(this);
+    }
+
+    private void DBTearDown() {
+        FlowManager.destroy();
     }
 
     private void initFacebook() {

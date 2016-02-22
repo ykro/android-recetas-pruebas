@@ -26,8 +26,6 @@ public class Recipe extends BaseModel {
 
     @Column private boolean favorite;
 
-    public Recipe(){}
-
     public String getRecipeId() {
         return recipeId;
     }
